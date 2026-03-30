@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aryash Yelkar | 3D Visualizer</title>
+
+    <style>
+        /* CSS Reset & Variables */
+        :root {
+            --bg-dark: #040407;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --neon-purple: #bc13fe;
+            --neon-cyan: #00f3ff;
+            --text-white: #f5f5f7;
+            --text-muted: #8a8a93;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* BACKGROUND EFFECTS (Whole Website) */
+
+        /* 1. Dynamic Particle Constellation Network */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: radial-gradient(rgba(188, 19, 254, 0.2) 1px, transparent 1px);
+            background-size: 80px 80px;
+            z-index: -3;
+            animation: networkMove 100s linear infinite;
+        }
+
+        /* Creates connecting lines */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(188, 19, 254, 0.04) 1px, transparent 1px);
+            background-size: 160px 160px;
+            z-index: -3;
+            animation: networkMove 150s linear infinite alternate-reverse;
+        }
+
+        @keyframes networkMove {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-10%, -10%) rotate(5deg);
+            }
+        }
+
+        /* 2. Floating 3D Wireframe Primitives */
+        .background-primitives {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .primitive {
+            position: absolute;
+            border: 1px solid rgba(188, 19, 254, 0.5);
+            filter: drop-shadow(0 0 5px var(--neon-purple));
+            animation: primitiveOrbit infinite linear;
+        }
+
+        .cube {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 15%;
+            transform: rotateX(45deg) rotateY(45deg);
+            animation-duration: 35s;
+        }
+
+        .pyramid {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 80px solid rgba(0, 243, 255, 0.3);
+            border-bottom-color: var(--neon-cyan);
+            top: 60%;
+            right: 20%;
+            animation-duration: 45s;
+            animation-direction: reverse;
+        }
+
+        @keyframes primitiveOrbit {
+            0% {
+                transform: translate(0, 0) rotateX(45deg) rotateY(45deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: translate(100px, 100px) rotateX(45deg) rotateY(45deg) rotateZ(360deg);
+            }
+        }
+
+        /* 3. Global Scanline & Flicker Effect */
+        .global-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(rgba(255, 255, 255, 0.005) 50%, transparent 50%);
+            background-size: 100% 4px;
+            opacity: 0.3;
+            animation: scanlineScroll 1s linear infinite, globalFlicker 10s infinite;
+        }
+
+        @keyframes scanlineScroll {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 0 100%;
+            }
+        }
+
+        @keyframes globalFlicker {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
+                opacity: 0.3;
+            }
+
+            20%,
+            24%,
+            55% {
+                opacity: 0.1;
+            }
+        }
+
+        /* --- Floating Nebula Glows --- */
+        .nebula-purple,
+        .nebula-cyan {
+            position: fixed;
+            width: 700px;
+            height: 700px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.2;
+            z-index: -4;
+            pointer-events: none;
+        }
+
+        .nebula-purple {
+            background: var(--neon-purple);
+            top: -150px;
+            right: -150px;
+            animation: floatGlow 15s ease-in-out infinite alternate;
+        }
+
+        .nebula-cyan {
+            background: var(--neon-cyan);
+            bottom: -150px;
+            left: -150px;
+            animation: floatGlow 20s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatGlow {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-30px, 50px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(20px, -20px) scale(0.9);
+            }
+        }
+
+
+        /* HEADER & NAV */
+        header {
+            background: rgba(3, 3, 5, 0.9);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(188, 19, 254, 0.15);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            margin-top: 15px;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+
+        /* STYLIZED BANNER SECTION */
+        .software-banner {
+            background: rgba(4, 4, 7, 0.85);
+            padding: 80px 20px;
+            margin: 40px auto;
+            max-width: 1100px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            backdrop-filter: blur(8px);
+            z-index: 5;
+        }
+
+        .banner-content {
+            width: 100%;
+        }
+
+        .banner-content h2 {
+            font-size: 32px;
+            margin: 0 0 40px 0;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            text-align: center;
+        }
+
+        .software-stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .software-stack-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 160px;
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .software-stack-item:hover {
+            transform: scale(1.05) translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.15);
+        }
+
+        .software-stack-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(188, 19, 254, 0.2));
+        }
+
+        .software-stack-item h3 {
+            font-size: 13px;
+            margin: 0 0 5px 0;
+            color: var(--text-white);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .software-status {
+            font-size: 10px;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        .software-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-cyan);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            animation: statusPulse 1.5s infinite alternate;
+        }
+
+        @keyframes statusPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+                box-shadow: 0 0 2px var(--neon-cyan);
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 1;
+                box-shadow: 0 0 10px var(--neon-cyan);
+            }
+        }
+
+
+        /* HERO SECTION */
+        .hero {
+            text-align: center;
+            padding: 160px 20px;
+            background: linear-gradient(rgba(4, 4, 7, 0.6), rgba(4, 4, 7, 0.95));
+            border-bottom: 1px solid rgba(188, 19, 254, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-title-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .hero-title-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 130%;
+            height: 130%;
+            background: radial-gradient(ellipse at center, rgba(0, 243, 255, 0.15) 0%, rgba(188, 19, 254, 0.05) 40%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: glowPulse 4s ease-in-out infinite alternate;
+        }
+
+        .hero-title-blueprint {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: calc(100% + 40px);
+            height: calc(100% + 40px);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.2;
+        }
+
+        .hero-title-blueprint::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 243, 255, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: center center;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            animation: blueprintShimmer 8s linear infinite alternate;
+        }
+
+        .hero-title-blueprint::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            background-image: radial-gradient(rgba(188, 19, 254, 0.6) 2px, transparent 2px);
+            background-size: 20px 20px;
+            background-position: center center;
+            filter: drop-shadow(0 0(3px) var(--neon-purple));
+            animation: nodePulse 2s ease-in-out infinite alternate;
+        }
+
+        .hero h2 {
+            font-size: 56px;
+            margin: 0;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0px 0px 20px rgba(188, 19, 254, 0.5), 0px 0px 10px rgba(0, 243, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero p {
+            font-size: 19px;
+            color: var(--neon-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.95);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        @keyframes blueprintShimmer {
+            0% {
+                opacity: 0.15;
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                opacity: 0.3;
+                filter: hue-rotate(15deg);
+            }
+        }
+
+        @keyframes nodePulse {
+            0% {
+                opacity: 0.4;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* FLOATING ICONS */
+        .floating-icons img {
+            position: absolute;
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            opacity: 0.25;
+            filter: drop-shadow(0 0 10px rgba(188, 19, 254, 0.2));
+            z-index: 1;
+            animation: floatIcon 6s ease-in-out infinite;
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        .floating-icons img:hover {
+            opacity: 0.7;
+            filter: drop-shadow(0 0 15px var(--neon-cyan));
+        }
+
+        .icon-maya {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s !important;
+        }
+
+        .icon-blender {
+            top: 55%;
+            left: 15%;
+            animation-delay: 1.5s !important;
+            animation-duration: 5s !important;
+        }
+
+        .icon-substance {
+            top: 20%;
+            right: 12%;
+            animation-delay: 0.5s !important;
+            animation-duration: 7s !important;
+        }
+
+        .icon-zbrush {
+            top: 60%;
+            right: 18%;
+            animation-delay: 2s !important;
+        }
+
+        .icon-unreal {
+            top: 40%;
+            left: 48%;
+            animation-delay: 1s !important;
+            animation-duration: 8s !important;
+            width: 55px !important;
+        }
+
+        @keyframes floatIcon {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(3deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+
+        /* CONTENT SECTIONS */
+        section {
+            padding: 80px 30px;
+            max-width: 1100px;
+            margin: 60px auto;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+        }
+
+        h2.section-title {
+            font-size: 32px;
+            margin-bottom: 40px;
+            margin-top: 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2.section-title::after {
+            content: '';
+            display: block;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            margin: 10px auto 0 auto;
+            border-radius: 2px;
+        }
+
+
+        /* ABOUT SECTION */
+        .about {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 50px;
+            flex-wrap: wrap;
+            text-align: left;
+        }
+
+        .about img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--neon-purple);
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
+        }
+
+        .about-text {
+            max-width: 600px;
+            flex: 1 1 500px;
+        }
+
+        .about-text h2 {
+            margin-top: 0;
+            color: var(--neon-cyan);
+        }
+
+        .about-text p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+
+        /* RESUME SECTION */
+        #resume p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+
+        /* PORTFOLIO */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .portfolio-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-purple);
+            box-shadow: 0 10px 20px rgba(188, 19, 254, 0.15);
+        }
+
+        .portfolio-grid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 4, 7, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+        }
+
+        .portfolio-overlay h3 {
+            font-size: 18px;
+            margin: 0 0 8px 0;
+            color: var(--neon-cyan);
+        }
+
+        .portfolio-overlay p {
+            font-size: 13px;
+            margin: 0;
+            color: var(--text-white);
+        }
+
+
+        /* VIDEOS (SHOWREELS) */
+        .showreel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.4s ease;
+        }
+
+        .video-card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .video-card h3 {
+            font-size: 18px;
+            margin: 15px 0 5px 0;
+            color: #fff;
+            text-align: left;
+        }
+
+        .video-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+            text-align: left;
+        }
+
+        .video {
+            width: 100%;
+            border-radius: 8px;
+            display: block;
+        }
+
+
+
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            text-align: left;
+        }
+
+        .contact-info h3 {
+            color: var(--neon-cyan);
+            font-size: 24px;
+            margin-top: 0;
+        }
+
+        .contact-info p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            color: var(--text-white);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-links a:hover {
+            background: rgba(188, 19, 254, 0.1);
+            border-color: var(--neon-purple);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(188, 19, 254, 0.2);
+        }
+
+        .social-links a.whatsapp-btn:hover {
+            background: rgba(37, 211, 102, 0.1);
+            border-color: #25D366;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.2);
+        }
+
+        .social-links a.instagram-btn:hover {
+            background: rgba(225, 48, 108, 0.1);
+            border-color: #E1306C;
+            box-shadow: 0 5px 15px rgba(225, 48, 108, 0.2);
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--neon-cyan);
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: rgba(4, 4, 7, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+            background: rgba(4, 4, 7, 1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+
+        /* BUTTON */
+        button {
+            padding: 12px 30px;
+            border: none;
+            background: linear-gradient(135deg, var(--neon-purple), #8900c2);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(188, 19, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(188, 19, 254, 0.5);
+            background: linear-gradient(135deg, #ce3aff, var(--neon-purple));
+        }
+
+
+        /* FOOTER */
+        footer {
+            background: #030305;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .about {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero h2 {
+                font-size: 34px;
+            }
+
+            .floating-icons img {
+                width: 45px;
+                height: 45px;
+                opacity: 0.15;
+            }
+
+            section {
+                margin: 30px 15px;
+                padding: 40px 20px;
+            }
+
+            .nebula-purple,
+            .nebula-cyan {
+                width: 300px;
+                height: 300px;
+            }
+
+            .primitive {
+                display: none;
+            }
+
+            .software-banner {
+                transform: none;
+                padding: 60px 20px;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="nebula-purple"></div>
+    <div class="nebula-cyan"></div>
+
+    <div class="background-primitives">
+        <div class="primitive cube"></div>
+        <div class="primitive pyramid"></div>
+    </div>
+
+    <div class="global-effects"></div>
+    <header>
+        <h1>Aryash Yelkar | 3D Visualizer</h1>
+        <nav>
+            <a href="#about">About</a>
+            <a href="#resume">Resume</a>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#showreel">Showreels</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <div class="floating-icons">
+            <img src="Portfolio/Software Icon/Maya-Photoroom.png" class="icon-maya" alt="Maya">
+            <img src="Portfolio/Software Icon/Blender.png" class="icon-blender" alt="Blender">
+            <img src="Portfolio/Software Icon/Substance 3D Painter Icon-Photoroom.png" class="icon-substance"
+                alt="Substance Painter">
+            <img src="Portfolio/Software Icon/Zbrush Logo.jpg" class="icon-zbrush" alt="ZBrush">
+            <img src="Portfolio/Software Icon/Unreal Engine.jpg" class="icon-unreal" alt="Unreal Engine">
+        </div>
+
+        <div class="hero-title-container">
+            <div class="hero-title-glow"></div>
+            <div class="hero-title-blueprint"></div>
+            <h2>Welcome to My 3D Portfolio</h2>
+        </div>
+
+        <p>3D Modeling | Product Visualization | Props | Game Assets</p>
+    </div>
+
+    <section id="about">
+        <div class="about">
+            <img src="Portfolio/Personal Photo/IMG-20260125-WA0014.jpg.jpeg" alt="Profile Photo">
+            <div class="about-text">
+                <h2>About Me</h2>
+                <p>
+                    Hello! I'm <b>Aryash Yelkar</b>, a passionate and detail-oriented 3D Artist with a strong focus on
+                    product modeling, props creation, and the development of high-quality 3D assets. With a keen eye for
+                    realism and precision, I specialize in crafting visually compelling models that are both technically
+                    sound and aesthetically engaging.
+                </p>
+                <p>
+                    My work spans across product visualization, gaming assets, and digital media, where I strive to
+                    bring concepts to life through meticulous attention to detail. I emphasize clean topology, efficient
+                    geometry, and optimized workflows to ensure that every asset is production-ready. I work with
+                    industry-standard software such as Maya, Blender, Substance Painter, ZBrush, After Effects, and
+                    Photoshop as part of my workflow, allowing me to handle everything from modeling and sculpting to
+                    texturing, rendering, and post-production.
+                </p>
+                <p>
+                    In addition, I pay close attention to material accuracy, texturing, and realistic lighting setups,
+                    enabling me to create renders that closely mimic real-world visuals. I enjoy the full creative
+                    pipeline, integrating multiple tools to achieve polished and professional results.
+                </p>
+                <p>
+                    I am deeply passionate about transforming ideas into immersive 3D experiences. Whether it's a sleek
+                    product design or an intricate prop, I enjoy the entire creative process—from concept development to
+                    final render. I am also committed to continuous learning, regularly exploring new tools, techniques,
+                    and industry trends to refine my craft and stay ahead in the evolving world of 3D art.
+                </p>
+                <p>
+                    Driven by creativity and precision, I aim to deliver high-quality assets that not only meet
+                    technical standards but also captivate and inspire.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="software-banner">
+        <div class="banner-content">
+            <h2>Software Stack Showcase</h2>
+            <div class="software-stack-grid">
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/Maya-Photoroom.png" alt="Maya">
+                    <h3>Autodesk Maya</h3>
+                    <div class="software-status">Active</div>
+                </div>
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/Blender.png" alt="Blender">
+                    <h3>Blender</h3>
+                    <div class="software-status">Active</div>
+                </div>
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/Substance 3D Painter Icon-Photoroom.png" alt="Substance Painter">
+                    <h3>Substance Painter</h3>
+                    <div class="software-status">Active</div>
+                </div>
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/Zbrush Logo.jpg" alt="ZBrush">
+                    <h3>ZBrush</h3>
+                    <div class="software-status">Active</div>
+                </div>
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/Unreal Engine.jpg" alt="Unreal Engine">
+                    <h3>Unreal Engine</h3>
+                    <div class="software-status">Active</div>
+                </div>
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/Photoshop-Photoroom.png" alt="Photoshop">
+                    <h3>Adobe Photoshop</h3>
+                    <div class="software-status">Active</div>
+                </div>
+                <div class="software-stack-item">
+                    <img src="Portfolio/Software Icon/After Effects-Photoroom.png" alt="After Effects">
+                    <h3>After Effects</h3>
+                    <div class="software-status">Active</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="resume">
+        <h2 class="section-title">My Resume</h2>
+        <p>Download my professional resume to review my background and skills.</p>
+
+        <a href="Portfolio/AryashYelkar Resume (1).png" download="AryashYelkar_Resume.png">
+            <button>Download Resume</button>
+        </a>
+    </section>
+
+    <section id="portfolio">
+        <h2 class="section-title">My Portfolio</h2>
+
+        <div class="portfolio-grid">
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/1.jpg" alt="3D Project 1">
+                <div class="portfolio-overlay">
+                    <h3>Product Visualization</h3>
+                    <p>Clean topology & realistic materials</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/2.jpg" alt="3D Project 2">
+                <div class="portfolio-overlay">
+                    <h3>Hero Prop Design</h3>
+                    <p>Detailed hard surface modeling</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/3.jpeg" alt="3D Project 3">
+                <div class="portfolio-overlay">
+                    <h3>Environment Asset</h3>
+                    <p>Game-ready optimized asset</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/4.jpg" alt="3D Project 4">
+                <div class="portfolio-overlay">
+                    <h3>Character Sculpt</h3>
+                    <p>Anatomy practice & detailing</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/5.jpg" alt="3D Project 5">
+                <div class="portfolio-overlay">
+                    <h3>Sci-Fi Weapon</h3>
+                    <p>PBR texturing in Substance Painter</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/6.jpg" alt="3D Project 6">
+                <div class="portfolio-overlay">
+                    <h3>Interior Archviz</h3>
+                    <p>Lighting & shading study</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/7.jpg" alt="3D Project 7">
+                <div class="portfolio-overlay">
+                    <h3>Foliage & Nature</h3>
+                    <p>Procedural generation & scattering</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <iframe src="https://www.youtube.com/embed/xiE5-5S42bE?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&playlist=xiE5-5S42bE" 
+                    style="width: 100%; height: 250px; display: block; border: none; pointer-events: none;" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="portfolio-overlay">
+                    <h3>Vehicle Modeling</h3>
+                    <p>Complex curve flow & paneling</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/9.png" alt="3D Project 9">
+                <div class="portfolio-overlay">
+                    <h3>Stylized Asset</h3>
+                    <p>Hand-painted texture practice</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/10.jpg" alt="3D Project 10">
+                <div class="portfolio-overlay">
+                    <h3>Modular Kitbash</h3>
+                    <p>Grid-aligned structural pieces</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="Portfolio/3D/11.png" alt="3D Project 11">
+                <div class="portfolio-overlay">
+                    <h3>Lighting Cinematic</h3>
+                    <p>Real-time lighting in Unreal Engine</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="showreel">
+        <h2 class="section-title">Showreels</h2>
+
+        <div class="showreel-grid">
+            <div class="video-card">
+                <iframe class="video" style="aspect-ratio: 16/9; border: none;" src="https://www.youtube.com/embed/wOtpFgVfcEc" 
+                    title="General Showreel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <h3>General Showreel</h3>
+                <p>A compilation of my best modeling, texturing, and lighting work.</p>
+            </div>
+
+            <div class="video-card">
+                <iframe class="video" style="aspect-ratio: 16/9; border: none;" src="https://www.youtube.com/embed/IKg49qAmZ3w" 
+                    title="Specialized Reel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <h3>Specialized Reel</h3>
+                <p>Focused breakdown of my environment designs and game-ready assets.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Let's Collaborate</h3>
+                <p>I am always open to discussing new projects, creative ideas, or opportunities to be part of your
+                    vision. Connect with me directly on WhatsApp or Instagram!</p>
+
+                <p><b>Location:</b> Pune, Maharashtra, India</p>
+
+                <div class="social-links">
+                    <a href="https://wa.me/918624858811" target="_blank" class="whatsapp-btn">WhatsApp</a>
+                    <a href="https://www.instagram.com/aryash_yelkar?igsh=MTBtcWhweGt0YnN4aQ==" target="_blank"
+                        class="instagram-btn">Instagram</a>
+                    <a href="https://www.linkedin.com/in/aryash-yelkar-4435302b0" target="_blank">LinkedIn</a>
+                    <a href="mailto:yelkararyash79876@gmail.com">Email Me</a>
+                </div>
+            </div>
+
+            <form class="contact-form" action="#" method="POST">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Your Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Your Message</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Let's talk about your project..."
+                        required></textarea>
+                </div>
+
+                <button type="submit" style="align-self: flex-start;">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Aryash Yelkar | 3D Artist Portfolio</p>
+    </footer>
+
+</body>
+
+</html>
